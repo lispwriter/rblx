@@ -4,6 +4,7 @@
 #
 # 
 
+from pynput.mouse import Button, Listener
 #import pynput.mouse as mm
 #import pynput.keyboard as kk
 from random import random as rn
@@ -93,123 +94,134 @@ def main():
 		time.sleep(1)
 		print("> {}...".format(countdown))
 
+	with Listener(on_click=kill_click) as listener:
 
-	# start by opening rebirths and rebirthing
-	control.move_mouse(pos.rebirth_open)
-	#control.after_lag()
-	control.click_mouse(1)
-	control.after_lag()
-	
-	# first time try from the highest rebirth option down to the lowest
-	rbpos = [pos.rebirth_20, pos.rebirth_10, pos.rebirth_5, 
-		pos.rebirth_3, pos.rebirth_1]
-	for i in range(len(rbpos)):
-		control.move_mouse(rbpos[i])
-		control.click_mouse(1, short_lag=True)
-		#control.after_lag()
-
-	while True:
-		
-		t0 = time.time()
-
-		# check connection
-		print("checking status...")
-		cv.screenshot()
-		if cv.check_disco():
-			print("YOU GOT DISCONNECTED, BRO!")
-			# close roblox
-			cv.close_roblox()
-			break
-		else:
-			print("GOOD TO GO")
-
-		# open the pet dialog
-		control.move_mouse(pos.pets_open)
-		control.click_mouse(1)
-		control.after_lag()
-
-		# equip pets
-		equipped = 0
-		
-		print("equipping to {} pets".format(max_equip))
-
-		for rowid in range(equip_rows):
-			ypos = pos.first_pet[1] + pos.pet_dy*rowid
-			for colid in range(per_row):
-				xpos = pos.first_pet[0] + pos.pet_dx*colid
-
-				control.move_mouse((xpos, ypos))
-				control.click_mouse(2, short_lag=True)
-
-				equipped += 1
-				# initially we can only equip 4 pets so now we have to 
-				# take a break and upgrade the range
-				if equipped == 4:
-					control.after_lag()
-
-					# open the ranch control to upgrade it
-					control.move_mouse(pos.ranch_open)
-					control.click_mouse(1)
-					#control.after_lag()
-
-					# move to the upgrade button
-					control.move_mouse(pos.ranch_upgrade)
-
-					# upgrade the ranch a little
-					for i in range(num_upgrades):
-
-						if i < 10:
-							time.sleep(upgrade0 + upgradeDelta*i/10)
-						else:
-							time.sleep(upgrade0 + upgradeDelta)
-
-						control.click_mouse(1)
-
-					control.after_lag()
-
-					# go back to the pets dialog so the loop can finish equipping
-					# pets
-					control.move_mouse(pos.pets_open)
-					control.click_mouse(1)
-
-
-				if equipped >= max_equip:
-					break
-
-
-		control.after_lag()
-
-		# close it and move a tiny bit
-		control.move_mouse(pos.pets_open)
-		control.click_mouse(1)
-
-		ky = control.random_move_key()
-		control.move_avatar(ky, 0.05)
-
-		print("waiting to rebirth again...")
-		time.sleep(end_wait)
-
-		# rebirth time
+		# start by opening rebirths and rebirthing
 		control.move_mouse(pos.rebirth_open)
 		#control.after_lag()
 		control.click_mouse(1)
 		control.after_lag()
 		
-		# click the rebirth button
-		control.move_mouse(rb_button)
-		control.click_mouse(1)
-		control.after_lag()		
+		# first time try from the highest rebirth option down to the lowest
+		rbpos = [pos.rebirth_20, pos.rebirth_10, pos.rebirth_5, 
+			pos.rebirth_3, pos.rebirth_1]
+		for i in range(len(rbpos)):
+			control.move_mouse(rbpos[i])
+			control.click_mouse(1, short_lag=True)
+			#control.after_lag()
 
-		# close it
-#		control.move_mouse(pos.rebirth_open)
-#		control.click_mouse(1)
-#		control.after_lag()
+		while True:
 
-		passtime = time.time() - t0
-		count += 1
-		print("rebirth {} time was {} seconds...".format(count, passtime))
+			if not listener.running:
+				break
+
+			t0 = time.time()
+
+			# check connection
+			print("checking status...")
+			cv.screenshot()
+			if cv.check_disco():
+				print("YOU GOT DISCONNECTED, BRO!")
+				# close roblox
+				cv.close_roblox()
+				break
+			else:
+				print("GOOD TO GO")
+
+			# open the pet dialog
+			control.move_mouse(pos.pets_open)
+			control.click_mouse(1)
+			control.after_lag()
+
+			# equip pets
+			equipped = 0
+			
+			print("equipping to {} pets".format(max_equip))
+
+			for rowid in range(equip_rows):
+
+				ypos = pos.first_pet[1] + pos.pet_dy*rowid
+				for colid in range(per_row):
+
+					xpos = pos.first_pet[0] + pos.pet_dx*colid
+
+					control.move_mouse((xpos, ypos))
+					control.click_mouse(2, short_lag=True)
+
+					equipped += 1
+					# initially we can only equip 4 pets so now we have to 
+					# take a break and upgrade the range
+					if equipped == 4:
+						control.after_lag()
+
+						# open the ranch control to upgrade it
+						control.move_mouse(pos.ranch_open)
+						control.click_mouse(1)
+						#control.after_lag()
+
+						# move to the upgrade button
+						control.move_mouse(pos.ranch_upgrade)
+
+						# upgrade the ranch a little
+						for i in range(num_upgrades):
+
+							if i < 10:
+								time.sleep(upgrade0 + upgradeDelta*i/10)
+							else:
+								time.sleep(upgrade0 + upgradeDelta)
+
+							control.click_mouse(1)
+
+						control.after_lag()
+
+						# go back to the pets dialog so the loop can finish equipping
+						# pets
+						control.move_mouse(pos.pets_open)
+						control.click_mouse(1)
+
+
+					if equipped >= max_equip:
+						break
+
+
+			control.after_lag()
+
+			# close it and move a tiny bit
+			control.move_mouse(pos.pets_open)
+			control.click_mouse(1)
+
+			ky = control.random_move_key()
+			control.move_avatar(ky, 0.05)
+
+			print("waiting to rebirth again...")
+			time.sleep(end_wait)
+
+			# rebirth time
+			control.move_mouse(pos.rebirth_open)
+			#control.after_lag()
+			control.click_mouse(1)
+			control.after_lag()
+			
+			# click the rebirth button
+			control.move_mouse(rb_button)
+			control.click_mouse(1)
+			control.after_lag()		
+
+			# close it
+	#		control.move_mouse(pos.rebirth_open)
+	#		control.click_mouse(1)
+	#		control.after_lag()
+
+			passtime = time.time() - t0
+			count += 1
+			print("rebirth {} time was {} seconds...".format(count, passtime))
 
 	return(0)
+
+def kill_click(x, y, button, pressed):
+	if pressed and button == Button.right:
+		print("KILL CLICK BRO")
+		return(False)
 
 class positions(object):
 	def __init__(self):

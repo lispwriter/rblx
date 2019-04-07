@@ -4,27 +4,38 @@
 #
 
 
-from pynput.mouse import Button, Controller
+from pynput.mouse import Button, Controller, Listener
 import time
+from RobloxSupport import *
 
-mouse = Controller()
+control = RobloxControl()
+
+def kill_click(x, y, button, pressed):
+	if pressed and button == Button.right:
+		print("KILL CLICK BRO")
+		return(False)
 
 countdown = 5
 delay = 0.25
 i = 0
 
-while i < countdown:
-	print("{}...".format(countdown - i))
-	time.sleep(1)
-	i = i + 1
+if __name__ == "__main__":
 
-i = 0
-while True:
-	time.sleep(1)
-	print("clicking")
-	mouse.click(Button.left, 1)
-	time.sleep(0.05)
-	mouse.click(Button.left, 1)
+	while i < countdown:
+		print("{}...".format(countdown - i))
+		time.sleep(1)
+		i = i + 1
+
+	with Listener(on_click=kill_click) as listener:
+
+		i = 0
+		while True:
+			if not listener.running:
+				break
+
+			time.sleep(1)
+			print("clicking")
+			control.click_mouse(2)
 
 
 

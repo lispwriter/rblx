@@ -21,6 +21,7 @@ class RobloxControl(object):
 		self.keys = kk.Key
 		self.mouse = mm.Controller()
 		self.button = mm.Button
+		self.listener = mm.Listener
 
 		self.lags = Lags()
 
@@ -79,6 +80,18 @@ class RobloxControl(object):
 
 	def press_mouse(self):
 		self.mouse.press(self.button.left)
+
+	def kill_click(x, y, button, pressed):
+		if pressed and button == self.button.right:
+			print("KILL CLICK BRO")
+			return(False)
+
+	def get_listener(self):
+		return(self.listener(on_click=self.kill_click))
+
+	def listener_running(self):
+		return(self.listener.running)
+
 
 
 # 'computer vision' class with presets to watch for certain things 

@@ -3,7 +3,7 @@
 # just clicking
 #
 
-from pynput.mouse import Button, Controller
+from pynput.mouse import Button, Controller, Listener
 from random import random as rn
 import pynput.keyboard as kbd
 import time
@@ -55,90 +55,100 @@ class Colors(object):
 
 		return False
 
+def kill_click(x, y, button, pressed):
+	if pressed and button == Button.right:
+		print("KILL CLICK BRO")
+		return(False)
 
-scan_ul = [267*2, 462*2]
-scan_lr = [1097*2, 1003*2]
+if __name__=="__main__":
 
-dx = scan_lr[0] - scan_ul[0]
-dy = scan_lr[1] - scan_ul[1]
+	scan_ul = [267*2, 462*2]
+	scan_lr = [1097*2, 1003*2]
 
-countdown = 5
-hatch_interval = 5
-press_lag = 0.2
-i = 0
-total_time = 0
-control = RobloxControl()
-cv = RobloxCV()
-cols = Colors()
+	dx = scan_lr[0] - scan_ul[0]
+	dy = scan_lr[1] - scan_ul[1]
 
-max_find = 10
+	countdown = 5
+	hatch_interval = 5
+	press_lag = 0.2
+	i = 0
+	total_time = 0
+	control = RobloxControl()
+	cv = RobloxCV()
+	cols = Colors()
 
-while i < countdown:
-	print("{}...".format(countdown - i))
-	time.sleep(1)
-	i = i + 1
+	max_find = 10
 
-i = 0
-tog = 1
-def toggle(n):
-	return(n * -1 + 1)
+	while i < countdown:
+		print("{}...".format(countdown - i))
+		time.sleep(1)
+		i = i + 1
 
-#control.move_mouse((561, 963))
+	i = 0
+	tog = 1
+	def toggle(n):
+		return(n * -1 + 1)
+
+	#control.move_mouse((561, 963))
 
 
-t0 = time.time()
+	t0 = time.time()
 
-while True:
-	i += 1
-	#if (i % 4) == 0 or i == 1:
+	with Listener(on_click=kill_click) as listener:
 
-	# take a new capture
-	print("grabbing screen")
-	os.system("screencapture pettrain.png")
-	im = Image.open("pettrain.png")
-	px = im.load()
-	tog = toggle(tog)
-
-	if time.time() - t0 > 200:
-
-		if cv.check_disco():
-			print(time.strftime("%c", time.localtime()))
-			print("DISCONNECTED. Bailing out...")
-			break			
-
-		t0 = time.time()
-
-	if True:
-		j = 0
-		found = 0
-		#print("checking {} positions at random".format(dx*dy))
-		while j < dx*dy:
-			xpos = int(math.floor(rn()*dx)) + scan_ul[0]
-			ypos = int(math.floor(rn()*dy)) + scan_ul[1]
-			j += 1
-
-			pos = (xpos, ypos)
-			cval = px[pos]
-
-			if cols.check_coin(cval):
-				print("found something!")
-				found += 1
-				# click it
-				pos = (int(math.floor(xpos/2)), int(math.floor(ypos/2)))
-				print(pos)
-				print(cval)
-				control.move_mouse(pos)
-				control.click_mouse(1)
-
-			if found > max_find:
-				#print("getting new screengrab")
+		while True:
+			i += 1
+			#if (i % 4) == 0 or i == 1:
+			if not listener.running:
 				break
+				
+			# take a new capture
+			print("grabbing screen")
+			os.system("screencapture pettrain.png")
+			im = Image.open("pettrain.png")
+			px = im.load()
+			tog = toggle(tog)
 
-	if tog==1:
-		# rotate a little
-		keyboard.press(kbd.Key.left)
-		time.sleep(1.5)
-		keyboard.release(kbd.Key.left)
+			if time.time() - t0 > 200:
+
+				if cv.check_disco():
+					print(time.strftime("%c", time.localtime()))
+					print("DISCONNECTED. Bailing out...")
+					break			
+
+				t0 = time.time()
+
+			if True:
+				j = 0
+				found = 0
+				#print("checking {} positions at random".format(dx*dy))
+				while j < dx*dy:
+					xpos = int(math.floor(rn()*dx)) + scan_ul[0]
+					ypos = int(math.floor(rn()*dy)) + scan_ul[1]
+					j += 1
+
+					pos = (xpos, ypos)
+					cval = px[pos]
+
+					if cols.check_coin(cval):
+						print("found something!")
+						found += 1
+						# click it
+						pos = (int(math.floor(xpos/2)), int(math.floor(ypos/2)))
+						print(pos)
+						print(cval)
+						control.move_mouse(pos)
+						control.click_mouse(1)
+
+					if found > max_find:
+						#print("getting new screengrab")
+						break
+
+			if tog==1:
+				# rotate a little
+				keyboard.press(kbd.Key.left)
+				time.sleep(1.5)
+				keyboard.release(kbd.Key.left)
 
 
 
