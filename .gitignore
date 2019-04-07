@@ -1,0 +1,13 @@
+*.png
+*.pyc
+*.gz
+.DS_Store
+Thumbs.db
+.Trashes
+._*
+*.o
+*.so
+*.exe
+*.dmg
+*.iso
+
