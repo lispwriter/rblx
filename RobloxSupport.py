@@ -113,6 +113,8 @@ class RobloxCV(object):
 		self.px = None
 		self.screenname = "screen.png"
 
+		self.color_dist_thresh = 10
+
 		self.close_window_pos = (25, 359)
 
 		self.control = RobloxControl()
@@ -143,16 +145,20 @@ class RobloxCV(object):
 
 		pos = self.positions[rtype][rsubtype]
 		col = self.colors[rtype][rsubtype]
-		flag = True
+		flag = False
 
 		for i in range(len(pos)):
 			obs_col = self.px[pos[i]]
-			for j in range(3):
-				if obs_col[j] != col[i][j]:
-					flag = False
+			di = self.color_dist(col[i], obs_col)
+			if di < self.color_dist_thresh:
+				flag = True
 
 		return flag
 
+	def color_dist(self, c1, c2):
+		n = 3
+		di = sum([(c1[i]-c2[i])**2 for i in range(n)])
+		return di
 
 	def check_disco(self):
 		return self.check_status("general", "disco")
